@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <iostream>
 const int MEMSIZE = 5E6;
+namespace CPU {
 struct MEM {
   // TODO clk
   unsigned char mem[MEMSIZE];
@@ -15,5 +16,5 @@ struct MEM {
   unsigned int loadIns(unsigned int pc);
   void loadInput();
 };
-
+}
 #endif

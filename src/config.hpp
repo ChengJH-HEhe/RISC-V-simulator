@@ -68,6 +68,9 @@ struct ins {
   bool flg1, flg2, jp; // 1 时不读， Q 记作 -1
   int imm, robID, pc;
   int clk;
+  inline void output() {
+    std::cerr << pc << " " << type << " " << rd << " " << rs1 << " " << rs2 << std::endl;
+  }
   // Jump 记录 pc
 };
 const int regcap = 32;
@@ -88,9 +91,11 @@ struct regfile {
     return cur[id].value;
   }
   inline void chQ(int id, int rl){
+    if(id == 0) return;
     nxt[id].Qi = rl;
   }
   inline void chV(int id, int v) {
+    if(id == 0) return;
     nxt[id].value = v;
   }
   inline void rob(int id, int val,int rl) {
@@ -145,18 +150,26 @@ template <class datatype, int cap> class queue {
   datatype dat[cap];
 
 public:
-  int head = 0, tail = 0;
+  int head = 0, tail = 1;
 
 public:
-  bool empty() { return head == tail; }
-  bool full() { return (head + 1 - tail) % cap == 0; }
+  queue(){
+    head = 0; tail = 1;
+  }
+  void clear() {
+    for(int i = 0; i < cap; ++i)
+      dat[i] = datatype{};
+    head = 0, tail = 1;
+  }
+  bool full() { return head == tail; }
+  bool empty() { return (head + 1 - tail) % cap == 0; }
   int frontNum() { return (head + 1) % cap; }
-  int tailNum() { return (tail + 1) % cap; }
+  int tailNum() { return tail % cap; }
   datatype &operator[](const int &pos) { return dat[pos]; }
   datatype front() { return dat[(head + 1) % cap]; }
   void push(const datatype &d) {
-    tail = (tail + 1) % cap;
     dat[tail] = d;
+    tail = (tail + 1) % cap;
   }
   void pop() { head = (head + 1) % cap; }
   void operator=(const queue &rhs) {

@@ -1,4 +1,6 @@
 #include"memory.hpp"
+#include <cstdio>
+namespace CPU{
 
 inline int b2hex(char c){
   if(isdigit(c)) return c - '0';
@@ -16,19 +18,20 @@ unsigned int MEM::loadIns(unsigned int pc) {
 }
 void MEM::loadInput(){
   unsigned int pos = 0;
-  int c;
-  puts("-----------Loadinput------------");
-  while((c = getchar()) != EOF) {
-    printf("%c ", c);
+  char c = getchar(); //std::cerr << c << std::endl;
+  //std::cerr << "-----------Loadinput------------" << std::endl;
+  while(c != EOF) {
     while(c != EOF && c != '@' && !isdigit(c) && !isalpha(c)) c = getchar();
     if(c == EOF) break;
     if(c == '@') {
       c = getchar();
+      pos = 0;
       while(isdigit(c) || isalpha(c)) pos = (pos << 4) + b2hex(c), c = getchar();
+      //std::cerr << pos << std::endl;
     } else {
       while(isdigit(c) || isalpha(c)) mem[pos] = (mem[pos] << 4) + b2hex(c), c = getchar();
+      //std::cerr << "mem[" << pos << "] = " << int(mem[pos]) << std::endl; 
       ++pos;
-      std::cout << "mem[" << pos << "] = " << mem[pos] << std::endl; 
     }
   }
 }
@@ -46,3 +49,4 @@ void MEM::loadInput(){
       dat >>= 8;
     }
   }
+}

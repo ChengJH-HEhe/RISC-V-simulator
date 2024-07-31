@@ -30,15 +30,20 @@ const int robcap = 32;
 struct ROB {
   queue<robNode, robcap> cur, nxt;
   int ticker_cur, ticker_nxt;
-  int snode_cur, snode_nxt;
-  void update() { cur = nxt; ticker_cur = ticker_nxt; snode_cur = snode_nxt;}
+  void update() {
+    cur = nxt;
+    ticker_cur = ticker_nxt;
+  }
   // receiver change nxt
 
   // receive from alu to undo relience
   void alu(int value, int id);
-  void commit(robNode, regfile*);
-  bool execute(regfile *, IQ *, LSB*, MEM*, bool *);
-  inline void reset() { nxt.head = nxt.tail = 0; ticker_cur = ticker_nxt = 0, snode_cur = snode_nxt = -1;}
+  void commit(robNode, regfile *);
+  bool execute(regfile *, IQ *, LSB *, MEM *, bool *);
+  inline void reset() {
+    nxt.head = 0, nxt.tail = 1;
+    ticker_cur = ticker_nxt = 0;
+  }
   // sender: change other's nxt
 };
 
@@ -75,9 +80,9 @@ struct IQ {
     cur = nxt;
     cur_jalr = nxt_jalr;
   }
-  bool fetch(const int &, MEM*);
+  bool fetch(const int &, MEM *);
   inline void reset() {
-    nxt.head = nxt.tail = 0;
+    nxt.clear();
     cur_jalr = nxt_jalr = false;
   }
 };
@@ -89,7 +94,7 @@ struct LSB {
     ticker_cur = ticker_nxt = 0;
   }
   void reset() {
-    nxt.head = nxt.tail = 0;
+    nxt.clear();
     ticker_cur = ticker_nxt = 0;
   }
   void alu(int value, int id) {
@@ -105,8 +110,8 @@ struct LSB {
           nxt[i].busy = false;
       }
   }
-  void execute(regfile *reg, ROB *rob, MEM* Mem) {
-    if (ticker_cur || rob->snode_cur != -1) {
+  void execute(regfile *reg, ROB *rob, MEM *Mem) {
+    if (ticker_cur) {
       if (ticker_cur == 3) {
         ticker_nxt = 0;
         Mem->busy_nxt = false;

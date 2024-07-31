@@ -20,7 +20,8 @@ void ALU::execute(ROB *rob, RS *rs, LSB *lsb, regfile *reg) {
     case JALR: {
       result = in.pc + 4;
       // 特判
-      rob->nxt[in.robID].pcDest = in.Vj + in.Vk;
+      rob->nxt[in.robID].pcDest = in.Vj + in.Vk; rob->nxt[in.robID].ready = true;
+      std::cout << "JALR ready ";  rob->nxt[in.robID].cmd.output();
     } break;
     default:
       assert(0);
@@ -75,13 +76,12 @@ bool ROB::execute(regfile *reg, IQ *iq, LSB* lsb, MEM* Mem, bool *reset) {
       return 1;
     }
     if (!Btype(head.cmd.type)) {
-      if(Stype(head.cmd.type)) {
+      if(Stype(head.cmd.type) || Ltype(head.cmd.type)) 
         ticker_nxt = 1;
-
-      }
       if (head.cmd.type == JALR)
         *reset = true, pc_nxt = head.pcDest;
-      commit(head, reg); //
+      if(head.cmd.rd != -1)
+        commit(head, reg); //
     } else {
       if (head.value != head.cmd.jp) {
         *reset = true;
@@ -94,14 +94,14 @@ bool ROB::execute(regfile *reg, IQ *iq, LSB* lsb, MEM* Mem, bool *reset) {
 }
 void RS::alu(int value, int id) {
   for (int i = 0; i < arraycap; ++i)
-    if (nxt[i].busy) {
-      if (nxt[i].Qj == id) {
+    if (cur[i].busy) {
+      if (cur[i].Qj == id) {
         nxt[i].Qj = -1, nxt[i].Vj = value;
       } // rs如何得到新值？
-      if (nxt[i].Qk == id) {
+      if (cur[i].Qk == id) {
         nxt[i].Qk = -1, nxt[i].Vk = value;
       } // rs如何得到新值？
-      if (nxt[i].robID == id)
+      if (cur[i].robID == id)
         nxt[i].busy = false;
     }
 }
@@ -119,6 +119,7 @@ bool IQ::fetch(const int &clk_, MEM* Mem) {
     ins cmd = decodeIns(code, pc_pred);
     cmd.clk = clk_;
     cmd.pc = pc_pred;
+    cmd.output();
     if (cmd.type != NIL) {
       if (Btype(cmd.type)) {
         if (BP.predictor(pc_pred))

@@ -120,7 +120,8 @@ std::string getExecutablePath() {
 }
 
 int main() { 
-  freopen("array_test1.data","r",stdin); 
+  freopen("./src/array_test1.data","r",stdin); 
+  freopen("./src/a.out","w", stdout);
   CPU::Mem.loadInput();
   CPU::process();
 }

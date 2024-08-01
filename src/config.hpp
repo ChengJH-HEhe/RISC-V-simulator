@@ -18,7 +18,7 @@ struct pc_predictor{
   bool predictor(unsigned int pc){
     // only B_functions
     unsigned int pc_hsh = hsh(pc);
-    if(bht[pc_hsh]&1) 
+    if(bht[pc_hsh]&1 && bht[pc_hsh]>=0) 
       return true;
     else return false;
   }

@@ -43,7 +43,6 @@ void MEM::loadInput(){
     return res;
   }
   void MEM::write(int pos, int len, unsigned int dat){
-    if(!pos) return;
     for(int i = 0; i < len; ++i){
       mem[pos++] = (dat & 0xFF);
       dat >>= 8;

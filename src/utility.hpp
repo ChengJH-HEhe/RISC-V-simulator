@@ -28,20 +28,26 @@ struct ALU {
 };
 const int robcap = 32;
 struct ROB {
+  int set_cur, set_nxt;
   queue<robNode, robcap> cur, nxt;
   int ticker_cur, ticker_nxt;
   void update() {
     cur = nxt;
+    set_cur = set_nxt;
     ticker_cur = ticker_nxt;
   }
   // receiver change nxt
-
   // receive from alu to undo relience
   void alu(int value, int id);
-  void commit(robNode, regfile *);
-  bool execute(regfile *, IQ *, LSB *, MEM *, bool *);
+  void commit(robNode, regfile*);
+  inline void output() {
+    for(int i = (cur.head+1)%robcap; i != cur.tail; (i = (i+1)%robcap)) 
+      std::cerr << "rob[" << i << "] " << (cur[i].ready?"ready":""), cur[i].cmd.output();
+  }
+  bool execute(regfile *, IQ *,RS *, LSB *, MEM *, bool *);
   inline void reset() {
-    nxt.head = 0, nxt.tail = 1;
+    set_cur = set_nxt = -1;
+    cur.clear(), nxt.clear();
     ticker_cur = ticker_nxt = 0;
   }
   // sender: change other's nxt
@@ -62,10 +68,9 @@ struct RS {
   }
   // 报错清空
   //
+  void output();
   inline void reset() {
-    for (int i = 0; i < arraycap; ++i) {
-      nxt[i] = {};
-    }
+    cur.reset(), nxt.reset();
     alu_id_cur = alu_id_nxt = -1;
   }
   void alu(int value, int id);
@@ -82,49 +87,94 @@ struct IQ {
   }
   bool fetch(const int &, MEM *);
   inline void reset() {
-    nxt.clear();
+    cur.clear(), nxt.clear();
     cur_jalr = nxt_jalr = false;
   }
 };
 struct LSB {
-  queue<insNode, 8> cur, nxt;
+  queue<insNode, 32> cur, nxt;
+  void output();
   int ticker_cur = 0, ticker_nxt = 0;
+  int load_cur = 0, load_nxt = 0;
   void update() {
     cur = nxt;
-    ticker_cur = ticker_nxt = 0;
+    ticker_cur = ticker_nxt;
+    load_cur = load_nxt;
   }
   void reset() {
-    nxt.clear();
+    cur.clear(), nxt.clear();
     ticker_cur = ticker_nxt = 0;
+    load_cur = load_nxt = 0;
   }
   void alu(int value, int id) {
-    for (int i = 0; i < arraycap; ++i)
-      if (nxt[i].busy) {
-        if (nxt[i].Qj == id) {
+    for (int i = (cur.head+1)%32; i != (cur.tail); i = (i+1)%32)
+      {
+        if (cur[i].Qj == id) {
           nxt[i].Qj = -1, nxt[i].Vj = value;
-        } // rs如何得到新值？
-        if (nxt[i].Qk == id) {
+        }
+        if (cur[i].Qk == id) {
           nxt[i].Qk = -1, nxt[i].Vk = value;
-        } // rs如何得到新值？
-        if (nxt[i].robID == id)
+        }
+        if (cur[i].robID == id)
           nxt[i].busy = false;
       }
   }
-  void execute(regfile *reg, ROB *rob, MEM *Mem) {
+  void execute(regfile *reg, ROB *rob, RS* rs, MEM *Mem) {
     if (ticker_cur) {
-      if (ticker_cur == 3) {
-        ticker_nxt = 0;
-        Mem->busy_nxt = false;
+      // lsb 接收到 rob 发现store已经结束，那么释放rs1, rs2依赖，
+      // rs1, rs2在store的3个周期里由于顺序提交，regfile中的值一定要与Vj, Vk
+      // 相同。因此在commit的时候直接读取reg_cur即可，提前存储的值未必保真
+      // 而load 指令又和 RS没有区别？？？ 但为了顺序执行check队头还是保留吧
+      if (ticker_cur == 2)
+        nxt.front().busy = false, nxt.pop(), ticker_nxt = 0;
+      // 1 执行中 2 执行完全
+    } else if (load_cur) {
+      if (load_cur == 3 ) {
+        // 开始执行
+        if(rob->set_nxt != -1) return;
+        unsigned int value;
         auto node = cur.front();
-        node.busy = false;
-        cur.pop();
-        rob->nxt[node.robID].ready = true;
+        if (node.op == LB)
+          value = Mem->read(node.Vj + node.imm, 1);
+        else if (node.op == LH)
+          value = Mem->read(node.Vj + node.imm, 2);
+        else if (node.op == LW)
+          value = Mem->read(node.Vj + node.imm, 4);
+        // like alu did
+        // std::cerr << "load lsb[" << cur.head << " " << cur.tail << "]->";
+        // std::cerr << "load rob[" << rob->cur.head << " " << rob->cur.tail << "]"; 
+        // std::cerr << "load change[" << node.robID << "] to true\n";
+        rob->alu(value, cur.front().robID);
+        // rob->alu(value, cur.front().robID); // execute is_busy = false;
+        // rs->alu(value, cur.front().robID);  // rd = rs1 + rs2 何时标记 ？writeback
+                              // 但未commit的时候 如果发现当前
+        //alu(value, cur.front().robID);
+        nxt.front().busy = false, nxt.pop();
+        load_nxt = 0;
       } else
-        ticker_nxt = ticker_cur + 1;
+        load_nxt = load_cur + 1;
     } else if (!cur.empty()) {
       auto node = cur.front();
-      if (node.Qj == -1 && node.Qk == -1) {
+      if (Ltype(node.op)) {
+          if (node.Qj == -1 && node.Qk == -1) {
+            // Load指令 解除rd依赖，此前rd依赖可以被更改？
+            // 那就应该改的和store不一样 rd rob处理 约定load
+            // LSB内部自行卡住，rob不会显示ready，等待mem返回给lsb时再将rob改成ready，然后自行删去LSB队头。
+            // 此时ticker_cur始终是0 ROB只会解除依赖
+            load_nxt = 1;
+          }
+      } else {
+        if (!Stype(node.op))
+          assert(0);
+        // rob 接收到 开始S的标志是该指令ready lsb开始s的标志时ticker_cur = 1
+        // 如果=2说明可以自行删去了 rob无权更改lsb
+        // 但真正完成在rob.ticker_cur=3的时候
+        ticker_nxt = 1;
+        
         rob->nxt[node.robID].ready = true;
+        // std::cerr << "lsb[" << cur.head << " " << cur.tail << "]->";
+        // std::cerr << "rob[" << rob->cur.head << " " << rob->cur.tail << "]"; 
+        // std::cerr << "change[" << node.robID << "] to true\n";
       }
     }
   }

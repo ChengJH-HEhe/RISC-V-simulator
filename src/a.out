@@ -1,0 +1,196 @@
+pc=0 type=LUI rd=2 rs1=4 rs2=0 imm=131072
+0
+pc=4 type=JAL rd=1 rs1=0 rs2=0 imm=4160
+4
+pc=4164 type=ADDI rd=2 rs1=2 rs2=0 imm=-32
+4164
+pc=4168 type=SW rd=4294967295 rs1=2 rs2=1 imm=28
+pc=4172 type=SW rd=4294967295 rs1=2 rs2=8 imm=24
+pc=4176 type=SW rd=4294967295 rs1=2 rs2=9 imm=20
+pc=4180 type=LUI rd=8 rs1=0 rs2=0 imm=4096
+4180
+pc=4184 type=ADDI rd=15 rs1=8 rs2=0 imm=416
+4184
+pc=4188 type=SW rd=4294967295 rs1=15 rs2=0 imm=0
+pc=4192 type=ADDI rd=14 rs1=0 rs2=1 imm=1
+4192
+pc=4196 type=SW rd=4294967295 rs1=2 rs2=14 imm=0
+JALR ready pc=4200 type=SW rd=4294967295 rs1=15 rs2=0 imm=4
+pc=4204 type=ADDI rd=14 rs1=0 rs2=2 imm=2
+4204
+pc=4208 type=SW rd=4294967295 rs1=2 rs2=14 imm=4
+pc=4212 type=SW rd=4294967295 rs1=15 rs2=0 imm=8
+pc=4216 type=ADDI rd=14 rs1=0 rs2=3 imm=3
+4216
+pc=4220 type=SW rd=4294967295 rs1=2 rs2=14 imm=8
+pc=4224 type=SW rd=4294967295 rs1=15 rs2=0 imm=12
+pc=4228 type=ADDI rd=15 rs1=0 rs2=4 imm=4
+4228
+pc=4232 type=SW rd=4294967295 rs1=2 rs2=15 imm=12
+pc=4236 type=ADDI rd=8 rs1=8 rs2=0 imm=416
+4236
+pc=4240 type=ADDI rd=9 rs1=8 rs2=16 imm=16
+4240
+pc=4244 type=LW rd=10 rs1=8 rs2=0 imm=0
+4244
+pc=4248 type=JAL rd=1 rs1=31 rs2=9 imm=-152
+4248
+pc=4096 type=LUI rd=14 rs1=0 rs2=0 imm=4096
+4096
+pc=4100 type=LW rd=15 rs1=14 rs2=16 imm=432
+4100
+pc=4104 type=XOR rd=10 rs1=10 rs2=15 imm=21942
+4104
+pc=4108 type=ADDI rd=10 rs1=10 rs2=13 imm=173
+4108
+pc=4112 type=SW rd=4294967295 rs1=14 rs2=10 imm=432
+pc=4116 type=JALR rd=0 rs1=1 rs2=0 imm=0
+4116
+JALR ready pc=4120 type=LBU rd=15 rs1=10 rs2=0 imm=0
+4120
+pc=4124 type=BEQ rd=4294967295 rs1=15 rs2=0 imm=36
+pc=4128 type=LUI rd=14 rs1=0 rs2=0 imm=4096
+4128
+pc=4132 type=LW rd=13 rs1=14 rs2=16 imm=432
+4132
+pc=4136 type=XOR rd=15 rs1=15 rs2=13 imm=21942
+4136
+pc=4140 type=ADDI rd=15 rs1=15 rs2=9 imm=521
+4140
+pc=4144 type=SW rd=4294967295 rs1=14 rs2=15 imm=432
+pc=4148 type=ADDI rd=10 rs1=10 rs2=1 imm=1
+4148
+pc=4152 type=LBU rd=15 rs1=10 rs2=0 imm=0
+4152
+pc=4156 type=BNE rd=4294967295 rs1=15 rs2=0 imm=-24
+JALR ready pc=4160 type=JALR rd=0 rs1=1 rs2=0 imm=0
+4160
+pc=4164 type=ADDI rd=2 rs1=2 rs2=0 imm=-32
+4164
+pc=4168 type=SW rd=4294967295 rs1=2 rs2=1 imm=28
+pc=4172 type=SW rd=4294967295 rs1=2 rs2=8 imm=24
+pc=4176 type=SW rd=4294967295 rs1=2 rs2=9 imm=20
+pc=4180 type=LUI rd=8 rs1=0 rs2=0 imm=4096
+4180
+pc=4184 type=ADDI rd=15 rs1=8 rs2=0 imm=416
+4184
+pc=4188 type=SW rd=4294967295 rs1=15 rs2=0 imm=0
+pc=4192 type=ADDI rd=14 rs1=0 rs2=1 imm=1
+4192
+pc=4196 type=SW rd=4294967295 rs1=2 rs2=14 imm=0
+JALR ready pc=4200 type=SW rd=4294967295 rs1=15 rs2=0 imm=4
+pc=4204 type=ADDI rd=14 rs1=0 rs2=2 imm=2
+4204
+pc=4208 type=SW rd=4294967295 rs1=2 rs2=14 imm=4
+pc=4212 type=SW rd=4294967295 rs1=15 rs2=0 imm=8
+pc=4216 type=ADDI rd=14 rs1=0 rs2=3 imm=3
+4216
+pc=4220 type=SW rd=4294967295 rs1=2 rs2=14 imm=8
+pc=4224 type=SW rd=4294967295 rs1=15 rs2=0 imm=12
+pc=4228 type=ADDI rd=15 rs1=0 rs2=4 imm=4
+4228
+pc=4232 type=SW rd=4294967295 rs1=2 rs2=15 imm=12
+pc=4236 type=ADDI rd=8 rs1=8 rs2=0 imm=416
+4236
+pc=4240 type=ADDI rd=9 rs1=8 rs2=16 imm=16
+4240
+pc=4244 type=LW rd=10 rs1=8 rs2=0 imm=0
+4244
+pc=4248 type=JAL rd=1 rs1=31 rs2=9 imm=-152
+4248
+pc=4096 type=LUI rd=14 rs1=0 rs2=0 imm=4096
+4096
+pc=4100 type=LW rd=15 rs1=14 rs2=16 imm=432
+4100
+pc=4104 type=XOR rd=10 rs1=10 rs2=15 imm=21942
+4104
+pc=4108 type=ADDI rd=10 rs1=10 rs2=13 imm=173
+4108
+pc=4112 type=SW rd=4294967295 rs1=14 rs2=10 imm=432
+pc=4116 type=JALR rd=0 rs1=1 rs2=0 imm=0
+4116
+JALR ready pc=4120 type=LBU rd=15 rs1=10 rs2=0 imm=0
+4120
+pc=4124 type=BEQ rd=4294967295 rs1=15 rs2=0 imm=36
+pc=4128 type=LUI rd=14 rs1=0 rs2=0 imm=4096
+4128
+pc=4132 type=LW rd=13 rs1=14 rs2=16 imm=432
+4132
+pc=4136 type=XOR rd=15 rs1=15 rs2=13 imm=21942
+4136
+pc=4140 type=ADDI rd=15 rs1=15 rs2=9 imm=521
+4140
+pc=4144 type=SW rd=4294967295 rs1=14 rs2=15 imm=432
+pc=4148 type=ADDI rd=10 rs1=10 rs2=1 imm=1
+4148
+pc=4152 type=LBU rd=15 rs1=10 rs2=0 imm=0
+4152
+pc=4156 type=BNE rd=4294967295 rs1=15 rs2=0 imm=-24
+JALR ready pc=4160 type=JALR rd=0 rs1=1 rs2=0 imm=0
+4160
+pc=4164 type=ADDI rd=2 rs1=2 rs2=0 imm=-32
+4164
+pc=4168 type=SW rd=4294967295 rs1=2 rs2=1 imm=28
+pc=4172 type=SW rd=4294967295 rs1=2 rs2=8 imm=24
+pc=4176 type=SW rd=4294967295 rs1=2 rs2=9 imm=20
+pc=4180 type=LUI rd=8 rs1=0 rs2=0 imm=4096
+4180
+pc=4184 type=ADDI rd=15 rs1=8 rs2=0 imm=416
+4184
+pc=4188 type=SW rd=4294967295 rs1=15 rs2=0 imm=0
+pc=4192 type=ADDI rd=14 rs1=0 rs2=1 imm=1
+4192
+pc=4196 type=SW rd=4294967295 rs1=2 rs2=14 imm=0
+JALR ready pc=4200 type=SW rd=4294967295 rs1=15 rs2=0 imm=4
+pc=4204 type=ADDI rd=14 rs1=0 rs2=2 imm=2
+4204
+pc=4208 type=SW rd=4294967295 rs1=2 rs2=14 imm=4
+pc=4212 type=SW rd=4294967295 rs1=15 rs2=0 imm=8
+pc=4216 type=ADDI rd=14 rs1=0 rs2=3 imm=3
+4216
+pc=4220 type=SW rd=4294967295 rs1=2 rs2=14 imm=8
+pc=4224 type=SW rd=4294967295 rs1=15 rs2=0 imm=12
+pc=4228 type=ADDI rd=15 rs1=0 rs2=4 imm=4
+4228
+pc=4232 type=SW rd=4294967295 rs1=2 rs2=15 imm=12
+pc=4236 type=ADDI rd=8 rs1=8 rs2=0 imm=416
+4236
+pc=4240 type=ADDI rd=9 rs1=8 rs2=16 imm=16
+4240
+pc=4244 type=LW rd=10 rs1=8 rs2=0 imm=0
+4244
+pc=4248 type=JAL rd=1 rs1=31 rs2=9 imm=-152
+4248
+pc=4096 type=LUI rd=14 rs1=0 rs2=0 imm=4096
+4096
+pc=4100 type=LW rd=15 rs1=14 rs2=16 imm=432
+4100
+pc=4104 type=XOR rd=10 rs1=10 rs2=15 imm=21942
+4104
+pc=4108 type=ADDI rd=10 rs1=10 rs2=13 imm=173
+4108
+pc=4112 type=SW rd=4294967295 rs1=14 rs2=10 imm=432
+pc=4116 type=JALR rd=0 rs1=1 rs2=0 imm=0
+4116
+JALR ready pc=4120 type=LBU rd=15 rs1=10 rs2=0 imm=0
+4120
+pc=4124 type=BEQ rd=4294967295 rs1=15 rs2=0 imm=36
+pc=4128 type=LUI rd=14 rs1=0 rs2=0 imm=4096
+4128
+pc=4132 type=LW rd=13 rs1=14 rs2=16 imm=432
+4132
+pc=4136 type=XOR rd=15 rs1=15 rs2=13 imm=21942
+4136
+pc=4140 type=ADDI rd=15 rs1=15 rs2=9 imm=521
+4140
+pc=4144 type=SW rd=4294967295 rs1=14 rs2=15 imm=432
+pc=4148 type=ADDI rd=10 rs1=10 rs2=1 imm=1
+4148
+pc=4152 type=LBU rd=15 rs1=10 rs2=0 imm=0
+4152
+pc=4156 type=BNE rd=4294967295 rs1=15 rs2=0 imm=-24
+JALR ready pc=4160 type=JALR rd=0 rs1=1 rs2=0 imm=0
+4160
+pc=4164 type=ADDI rd=2 rs1=2 rs2=0 imm=-32
+4164
+pc=4168 type=SW rd=4294967295 rs1=2 rs2=1 imm=28

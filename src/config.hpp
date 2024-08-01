@@ -53,6 +53,7 @@ enum Instype {
   LI  // ret
 };
 
+
 bool RBtype(Instype _);
 bool Rtype(Instype _) ;
 bool RItype(Instype _);
@@ -68,9 +69,7 @@ struct ins {
   bool flg1, flg2, jp; // 1 时不读， Q 记作 -1
   int imm, robID, pc;
   int clk;
-  inline void output() {
-    std::cerr << pc << " " << type << " " << rd << " " << rs1 << " " << rs2 << std::endl;
-  }
+  void output(std::ostream& ci = std::cerr);
   // Jump 记录 pc
 };
 const int regcap = 32;
@@ -80,6 +79,13 @@ struct regfile {
     int Qi = -1;
     int value;
   } cur[regcap], nxt[regcap];
+  regfile(){
+    cur[0].value = nxt[0].value = 0;
+  }
+  inline void reset(){
+    for(int i = 0; i < regcap; ++i)
+      cur[i].Qi = nxt[i].Qi = -1;
+  }
   inline void update() {
     for(int i = 0; i < regcap; ++i)
       cur[i] = nxt[i];
@@ -99,16 +105,25 @@ struct regfile {
     nxt[id].value = v;
   }
   inline void rob(int id, int val,int rl) {
+    chV(id, val);
     if(getQ(id) == rl) {
-      chQ(id, -1), chV(id, val);
+      chQ(id, -1);
+    } else {
+      //std::cerr << "rob fail " << getQ(id) << "!=" << rl << std::endl;
     }
   }
-  inline void reset() {
-    for(int i = 0; i < regcap; ++i)
-      nxt[i].Qi = -1;
-  }
   inline void alu(int id, int robid) {
+    if(id < 0) {
+
+    std::cerr << id << std::endl;
+    assert(id >= 0);
+    }
     nxt[id].Qi = robid;
+  }
+  inline void output() {
+    for(int i = 0; i < regcap; ++i)
+      if(cur[i].value)
+        std::cerr << "R[" << i << "]={" << cur[i].Qi << ", " << cur[i].value << "}" << std::endl;
   }
 };
 struct insNode {
@@ -119,21 +134,23 @@ struct insNode {
   int clk, pc, rd;
   Instype op;
   int imm;
-  int ticker;
   unsigned int robID;
   insNode() {
     op = NIL;
     busy = false;
   }
-  insNode(const ins &_ins, const regfile& reg) {
+  explicit insNode(const ins &_ins, const regfile& reg) {
     op = _ins.type;
     pc= _ins.pc;
     rd = _ins.rd;
-    Qj = _ins.flg1 == 1 ? -1 : (reg.cur[_ins.rs1].Qi == -1 ? Vj = reg.cur[_ins.rs1].value, -1: reg.cur[_ins.rs1].Qi);
-    Qk = _ins.flg2 == 1 ? -1 : (reg.cur[_ins.rs2].Qi == -1 ? Vk = reg.cur[_ins.rs2].value, -1: reg.cur[_ins.rs2].Qi);
+    imm = _ins.imm;
+    clk = _ins.clk;
+    Qj = _ins.flg1 == 1 ? -1 : (reg.cur[_ins.rs1].Qi == -1 ? (Vj = reg.cur[_ins.rs1].value, -1): reg.cur[_ins.rs1].Qi);
+    Qk = _ins.flg2 == 1 ? -1 : (reg.cur[_ins.rs2].Qi == -1 ? (Vk = reg.cur[_ins.rs2].value, -1): reg.cur[_ins.rs2].Qi);
     robID = _ins.robID;
     busy = true;
   }
+  void output();
 };
 struct robNode {
   bool ready = false;
@@ -164,9 +181,9 @@ public:
   bool full() { return head == tail; }
   bool empty() { return (head + 1 - tail) % cap == 0; }
   int frontNum() { return (head + 1) % cap; }
-  int tailNum() { return tail % cap; }
+  int tailNum() { return tail; }
   datatype &operator[](const int &pos) { return dat[pos]; }
-  datatype front() { return dat[(head + 1) % cap]; }
+  datatype &front() { return dat[(head + 1) % cap]; }
   void push(const datatype &d) {
     dat[tail] = d;
     tail = (tail + 1) % cap;
@@ -191,10 +208,11 @@ public:
     return false;
   }
   insNode &operator[](const int &pos) { return dat[pos]; }
-  int find() {
+  int find(int cur) {
     int res = -1, resage = -1;
     for (int i = 0; i < arraycap; ++i) {
-      if (dat[i].busy && dat[i].clk < resage)
+      if(i == cur) continue;
+      if (dat[i].busy && (dat[i].Qj == -1 && dat[i].Qk == -1) && (res == -1 || dat[i].clk < resage) )
         res = i, resage = dat[i].clk;
     }
     return res;

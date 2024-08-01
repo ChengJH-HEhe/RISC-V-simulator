@@ -7,7 +7,7 @@
 namespace CPU{
 struct pc_predictor{
   bool predictor(unsigned int pc){
-    return false;
+    return true;
   }
 };
 

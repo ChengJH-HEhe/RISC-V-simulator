@@ -11,19 +11,21 @@ struct pc_predictor{
   pc_predictor(){
     for(int i = 0; i < (1<<12);++i)
       bht[i] = -1;
+    chp = -1, valnxt = 0;
   }
-  unsigned hsh(unsigned int pc){
-    return pc&0xFFF;
+  unsigned int hsh(unsigned int pc){
+    return pc & 0xFFF;
   }
   bool predictor(unsigned int pc){
     // only B_functions
     unsigned int pc_hsh = hsh(pc);
-    if(bht[pc_hsh]&1) 
+    if((bht[pc_hsh]&1) && bht[pc_hsh] >= 0) 
       return true;
     else return false;
   }
   void update(){
-    bht[chp] = valnxt;
+    if(chp != -1)
+      bht[chp] = valnxt, chp = -1;
   }
 };
 
@@ -247,6 +249,7 @@ public:
 };
 
 inline int sign_extend(unsigned int nw, int highest_bit) {
+  if(highest_bit == 32) return nw;
   return (nw >> (highest_bit - 1) & 1)
              ? (nw | ((0xFFFFFFFF) >> highest_bit) << highest_bit)
              : nw;

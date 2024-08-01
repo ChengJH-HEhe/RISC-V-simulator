@@ -38,7 +38,7 @@ struct ROB {
   }
   // receiver change nxt
   // receive from alu to undo relience
-  void alu(int value, int id);
+  void alu(unsigned int value, int id);
   void commit(robNode, regfile*);
   inline void output() {
     for(int i = (cur.head+1)%robcap; i != cur.tail; (i = (i+1)%robcap)) 
@@ -73,7 +73,7 @@ struct RS {
     cur.reset(), nxt.reset();
     alu_id_cur = alu_id_nxt = -1;
   }
-  void alu(int value, int id);
+  void alu(unsigned int value, int id);
   void execute(ALU *alu);
 };
 struct IQ {
@@ -106,7 +106,7 @@ struct LSB {
     ticker_cur = ticker_nxt = 0;
     load_cur = load_nxt = 0;
   }
-  void alu(int value, int id) {
+  void alu(unsigned int value, int id) {
     for (int i = (cur.head+1)%32; i != (cur.tail); i = (i+1)%32)
       {
         if (cur[i].Qj == id) {
@@ -135,11 +135,11 @@ struct LSB {
         unsigned int value;
         auto node = cur.front();
         if (node.op == LB)
-          value = Mem->read(node.Vj + node.imm, 1), value = sign_extend(value, 8);
+          value = sign_extend(Mem->read(node.Vj + node.imm, 1), 8);
         else if (node.op == LH)
-          value = Mem->read(node.Vj + node.imm, 2), value = sign_extend(value, 16);
+          value = sign_extend(Mem->read(node.Vj + node.imm, 2), 16);
         else if (node.op == LW)
-          value = Mem->read(node.Vj + node.imm, 4), value = sign_extend(value, 32);
+          value = sign_extend(Mem->read(node.Vj + node.imm, 4), 32);
         else if(node.op == LBU)
           value = Mem->read(node.Vj + node.imm, 1);
         else if(node.op == LHU)

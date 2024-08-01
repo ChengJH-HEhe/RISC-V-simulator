@@ -11,7 +11,7 @@ void ALU::execute(ROB *rob, RS *rs, LSB *lsb, regfile *reg) {
     return;
   }
   //std::cerr << "ALU "; in.output();
-  int result;
+  unsigned int result;
   if (RBtype(in.op)) {
     if (Rtype(in.op)) {
       result = R_calc(in);
@@ -35,7 +35,7 @@ void ALU::execute(ROB *rob, RS *rs, LSB *lsb, regfile *reg) {
   rob->alu(result, in.robID); // execute is_busy = false;
 }
 
-void ROB::alu(int value, int id) {
+void ROB::alu(unsigned int value, int id) {
   nxt[id].value = value;
   nxt[id].ready = true;
   set_nxt = id;
@@ -128,7 +128,7 @@ bool ROB::execute(regfile *reg, IQ *iq, RS* rs, LSB* lsb, MEM* Mem, bool *reset)
   } 
   return 0;
 }
-void RS::alu(int value, int id) {
+void RS::alu(unsigned int value, int id) {
 //   if(value == 8 && id == 1)
 // std::cerr<<233;
   for (int i = 0; i < arraycap; ++i)

@@ -87,6 +87,7 @@ struct ins {
   bool flg1, flg2, jp; // 1 时不读， Q 记作 -1
   int imm, robID, pc;
   int clk;
+  ins(){jp = 0;}
   void output(std::ostream& ci = std::cerr);
   // Jump 记录 pc
 };
@@ -95,7 +96,7 @@ const int regcap = 32;
 struct regfile {
   struct regs {
     int Qi = -1;
-    int value;
+    unsigned int value;
   } cur[regcap], nxt[regcap];
   regfile(){
     for(int i = 0; i < regcap; ++i)
@@ -305,7 +306,7 @@ inline int B_calc(insNode res) {
     return (unsigned int)(res.Vj) >= (unsigned int)(res.Vk);
     break;
   case BLT:
-    return res.Vj < res.Vk;
+    return (int)res.Vj < (int)res.Vk;
     break;
   case BLTU:
     return (unsigned int)(res.Vj) < (unsigned int)(res.Vk);

@@ -25,7 +25,7 @@ void ALU::execute(ROB *rob, RS *rs, LSB *lsb, regfile *reg) {
       // 特判 Vk 是 imm 
       rob->nxt[in.robID].pcDest = in.Vj + in.imm;
       //std::cerr << "JALR ready " << "v"<<in.Vj<<" imm"<<" "<<in.imm<<" ";  
-      rob->nxt[in.robID].cmd.output();
+      //rob->nxt[in.robID].cmd.output();
     } break;
     default:
       assert(0);
@@ -60,7 +60,7 @@ bool ROB::execute(regfile *reg, IQ *iq, RS* rs, LSB* lsb, MEM* Mem, bool *reset)
       if(ticker_cur == 3) {
         // load instruction
         //std::cerr << "commit S"; 
-        cur.front().cmd.output();
+        //cur.front().cmd.output();
         // commit倒计时结束 已经写完，可以出队
         // S指令 直接读取当前的寄存器中数据
         // -> 执行完成发给队头，队头出队
@@ -92,7 +92,7 @@ bool ROB::execute(regfile *reg, IQ *iq, RS* rs, LSB* lsb, MEM* Mem, bool *reset)
     // for(int i = 0; i < 32; ++i)
     //   std::cout << reg->cur[i].value << " ";
     // std::cout << std::endl;
-    // head.cmd.output(std::cout);
+    //head.cmd.output(std::cout);
     if (head.cmd.type == LI) {
       return 1;
     }

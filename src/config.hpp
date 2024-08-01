@@ -7,7 +7,7 @@
 namespace CPU{
 struct pc_predictor{
   bool predictor(unsigned int pc){
-    return true;
+    return false;
   }
 };
 
@@ -116,7 +116,7 @@ struct regfile {
   }
   inline void alu(int id, int robid) {
     if(id <= 0) {
-      std::cerr << id << std::endl;
+      //std::cerr << id << std::endl;
       assert(id >= 0);
       return;
     }

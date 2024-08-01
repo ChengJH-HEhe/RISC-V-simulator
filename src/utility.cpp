@@ -92,7 +92,7 @@ bool ROB::execute(regfile *reg, IQ *iq, RS* rs, LSB* lsb, MEM* Mem, bool *reset)
     // for(int i = 0; i < 32; ++i)
     //   std::cout << reg->cur[i].value << " ";
     // std::cout << std::endl;
-    //head.cmd.output(std::cout);
+    // head.cmd.output(std::cout);
     if (head.cmd.type == LI) {
       return 1;
     }

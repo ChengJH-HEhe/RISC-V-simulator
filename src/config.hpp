@@ -80,6 +80,8 @@ struct regfile {
     int value;
   } cur[regcap], nxt[regcap];
   regfile(){
+    for(int i = 0; i < regcap; ++i)
+      cur[0].Qi = nxt[0].Qi = -1;
     cur[0].value = nxt[0].value = 0;
   }
   inline void reset(){
@@ -113,11 +115,12 @@ struct regfile {
     }
   }
   inline void alu(int id, int robid) {
-    if(id < 0) {
-
-    std::cerr << id << std::endl;
-    assert(id >= 0);
+    if(id <= 0) {
+      std::cerr << id << std::endl;
+      assert(id >= 0);
+      return;
     }
+
     nxt[id].Qi = robid;
   }
   inline void output() {

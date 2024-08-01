@@ -135,11 +135,16 @@ struct LSB {
         unsigned int value;
         auto node = cur.front();
         if (node.op == LB)
-          value = Mem->read(node.Vj + node.imm, 1);
+          value = Mem->read(node.Vj + node.imm, 1), value = sign_extend(value, 8);
         else if (node.op == LH)
-          value = Mem->read(node.Vj + node.imm, 2);
+          value = Mem->read(node.Vj + node.imm, 2), value = sign_extend(value, 16);
         else if (node.op == LW)
-          value = Mem->read(node.Vj + node.imm, 4);
+          value = Mem->read(node.Vj + node.imm, 4), value = sign_extend(value, 32);
+        else if(node.op == LBU)
+          value = Mem->read(node.Vj + node.imm, 1);
+        else if(node.op == LHU)
+          value = Mem->read(node.Vj + node.imm, 2);
+        else assert(0);
         // like alu did
         // std::cerr << "load lsb[" << cur.head << " " << cur.tail << "]->";
         // std::cerr << "load rob[" << rob->cur.head << " " << rob->cur.tail << "]"; 

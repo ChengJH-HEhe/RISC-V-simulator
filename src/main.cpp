@@ -29,8 +29,8 @@ inline void output(){
   reg.output();
   std::cerr << "----------------RS------------------" << std::endl;
   rs.output();
-  // std::cerr << "----------------LSB------------------" << std::endl;
-  // lsb.output();
+  std::cerr << "----------------LSB------------------" << std::endl;
+  lsb.output();
   std::cerr << "----------------ROB------------------" << std::endl;
   rob.output();
 }

@@ -3,7 +3,8 @@
 
 namespace CPU {
 extern int pc_nxt, pc_pred;
-pc_predictor BP;
+extern pc_predictor BP;
+extern int total, ac;
 void ALU::execute(ROB *rob, RS *rs, LSB *lsb, regfile *reg) {
   if (in.op == NIL) {
     rob->set_nxt = -1;
@@ -67,7 +68,9 @@ bool ROB::execute(regfile *reg, IQ *iq, RS* rs, LSB* lsb, MEM* Mem, bool *reset)
         auto node = lsb->cur.front();
         // rob 接受 mem 完成的 store
         auto cmd = cur.front().cmd;
+        
         if(!Stype(node.op)) assert(0);
+
         {
           // execute Store 操作 取当前的数
           if (node.op == SB)
@@ -89,17 +92,14 @@ bool ROB::execute(regfile *reg, IQ *iq, RS* rs, LSB* lsb, MEM* Mem, bool *reset)
     }
     // LI
     auto head = cur.front();
-    // for(int i = 0; i < 32; ++i)
-    //   std::cout << reg->cur[i].value << " ";
-    // std::cout << std::endl;
-    //head.cmd.output(std::cout);
+    
     if (head.cmd.type == LI) {
       return 1;
     }
     if (!Btype(head.cmd.type)) {
       // 新进入 S 
       if(Stype(head.cmd.type)) 
-        //std::cerr << "ticker S ", cur.front().cmd.output(),
+        // std::cerr << "ticker S ", cur.front().cmd.output(),
         // lsb 设置
         lsb->ticker_nxt = 1,
         ticker_nxt = 1;
@@ -110,18 +110,22 @@ bool ROB::execute(regfile *reg, IQ *iq, RS* rs, LSB* lsb, MEM* Mem, bool *reset)
       if (head.cmd.type == JALR)
         *reset = true, pc_nxt = head.pcDest, iq->nxt_jalr = false;// std::cerr << "pc_nxt = "<< pc_nxt << " " <<std::endl;
     } else {
+      ++total;
+      BP.chp = BP.hsh(head.cmd.pc);
       if (head.value != head.cmd.jp) {
+        ++ac;
         *reset = true;
         pc_nxt = head.value ? head.cmd.pc + head.cmd.imm : head.cmd.pc + 4;
+        if(BP.bht[BP.chp] < 2) BP.valnxt = 0;
+        else BP.valnxt = 3;
+      } else {
+        if(BP.bht[BP.chp] % 2 == 0) BP.valnxt = 1;
+        else BP.valnxt = 2;
       }
     }
     if(!ticker_nxt)
       nxt.pop();
-  }
-  // } else if(!cur.empty()) {
-  //   std::cerr << "FAIL [" << (cur.head+1)%32 << "]"; cur.front().cmd.output();
-  //   system("pause");
-  // }
+  } 
   return 0;
 }
 void RS::alu(int value, int id) {
@@ -162,7 +166,7 @@ void RS::execute(ALU *alu) {
   alu_id_nxt = cur.find(alu_id_cur);
 }
 bool IQ::fetch(const int &clk_, MEM* Mem) {
-  // std::cerr << "CLOCK=" << clk_ << std::endl;
+  //std::cerr << "CLOCK=" << clk_ << std::endl;
   if (!cur.full() && !cur_jalr) {
     unsigned int code = Mem->loadIns(pc_pred);
     ins cmd = decodeIns(code, pc_pred);

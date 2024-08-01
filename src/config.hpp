@@ -6,8 +6,24 @@
 
 namespace CPU{
 struct pc_predictor{
+  int chp, valnxt;
+  int bht[1<<12]; 
+  pc_predictor(){
+    for(int i = 0; i < (1<<12);++i)
+      bht[i] = -1;
+  }
+  unsigned hsh(unsigned int pc){
+    return pc&0xFFF;
+  }
   bool predictor(unsigned int pc){
-    return true;
+    // only B_functions
+    unsigned int pc_hsh = hsh(pc);
+    if(bht[pc_hsh]&1) 
+      return true;
+    else return false;
+  }
+  void update(){
+    bht[chp] = valnxt;
   }
 };
 
@@ -110,9 +126,7 @@ struct regfile {
     chV(id, val);
     if(getQ(id) == rl) {
       chQ(id, -1);
-    } else {
-      //std::cerr << "rob fail " << getQ(id) << "!=" << rl << std::endl;
-    }
+    } 
   }
   inline void alu(int id, int robid) {
     if(id <= 0) {
@@ -198,7 +212,7 @@ public:
       dat[i] = rhs.dat[i];
   }
 };
-const int arraycap = 8;
+const int arraycap = 16;
 struct array {
   insNode dat[arraycap];
 public:

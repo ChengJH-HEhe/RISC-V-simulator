@@ -14,7 +14,9 @@ LSB lsb;
 IQ iq;
 regfile reg;
 MEM Mem;
+pc_predictor BP;
 bool halt, reset;
+int total, ac;
 inline void updateAll() {
   // TODO
   alu.update();
@@ -23,6 +25,7 @@ inline void updateAll() {
   rs.update();
   lsb.update();
   iq.update();
+  BP.update();
 }
 inline void output(){
   std::cerr << "----------------REG------------------" << std::endl;
@@ -58,8 +61,10 @@ inline void issue() {
       return;
     }
     robNode rbnode(cmd, false);
+
     // std::cerr << "ISSUE " << rob.cur.tailNum()<< " ";
     // cmd.output();
+    
     if (cmd.rd != -1)
       assert(cmd.rd>=0), reg.alu(cmd.rd, cmd.robID);
     insNode rsnode(cmd, reg);

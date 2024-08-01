@@ -26,7 +26,7 @@ struct ALU {
   // to ROB -> RS, REGF 解除依赖
   void execute(ROB *, RS *, LSB *, regfile *);
 };
-const int robcap = 32;
+const int robcap = 16;
 struct ROB {
   int set_cur, set_nxt;
   queue<robNode, robcap> cur, nxt;
@@ -92,7 +92,7 @@ struct IQ {
   }
 };
 struct LSB {
-  queue<insNode, 32> cur, nxt;
+  queue<insNode, 16> cur, nxt;
   void output();
   int ticker_cur = 0, ticker_nxt = 0;
   int load_cur = 0, load_nxt = 0;

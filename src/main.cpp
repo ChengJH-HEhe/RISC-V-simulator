@@ -102,7 +102,6 @@ inline void issue() {
         rs.nxt.insert(rsnode);
       }
     }
-
     rob.nxt.push(rbnode);
   }
 }

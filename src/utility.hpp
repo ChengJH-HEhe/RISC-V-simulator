@@ -107,7 +107,7 @@ struct LSB {
     load_cur = load_nxt = 0;
   }
   void alu(unsigned int value, int id) {
-    for (int i = (cur.head+1)%32; i != (cur.tail); i = (i+1)%32)
+    for (int i = (cur.head+1)%16; i != (cur.tail); i = (i+1)%16)
       {
         if (cur[i].Qj == id) {
           nxt[i].Qj = -1, nxt[i].Vj = value;

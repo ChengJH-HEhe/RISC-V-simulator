@@ -83,9 +83,9 @@ const int Rop = 0b0110011, Iop = 0b0010011, Lop = 0b0000011, Sop = 0b0100011,
 
 struct ins {
   Instype type;
-  unsigned int rs2, rs1, rd;
+  unsigned int rs2, rs1, rd, imm;
   bool flg1, flg2, jp; // 1 时不读， Q 记作 -1
-  int imm, robID, pc;
+  int robID, pc;
   int clk;
   ins(){jp = 0;}
   void output(std::ostream& ci = std::cerr);
@@ -153,7 +153,7 @@ struct insNode {
   int Qj = -1, Qk = -1;
   int clk, pc, rd;
   Instype op;
-  int imm;
+  unsigned int imm;
   unsigned int robID;
   insNode() {
     op = NIL;
@@ -249,7 +249,7 @@ public:
   }
 };
 
-inline int sign_extend(unsigned int nw, int highest_bit) {
+inline unsigned int sign_extend(unsigned int nw, int highest_bit) {
   if(highest_bit == 32) return nw;
   return (nw >> (highest_bit - 1) & 1)
              ? (nw | ((0xFFFFFFFF) >> highest_bit) << highest_bit)
@@ -258,7 +258,7 @@ inline int sign_extend(unsigned int nw, int highest_bit) {
 
 
 // load immediate & determine the type
-inline int R_calc(insNode res) {
+inline unsigned int R_calc(insNode res) {
   switch (res.op) {
   case ADD:
   case ADDI:
@@ -288,13 +288,13 @@ inline int R_calc(insNode res) {
     return (unsigned int)(res.Vj) < (unsigned int)(res.Vk) ? 1 : 0;
   case SLT:
   case SLTI:
-    return res.Vj < res.Vk ? 1 : 0;
+    return (int)res.Vj < (int)res.Vk ? 1 : 0;
   default:
     assert(0);
   }
 }
 
-inline int B_calc(insNode res) {
+inline unsigned int B_calc(insNode res) {
   switch (res.op) {
   case BEQ:
     return res.Vj == res.Vk;
@@ -514,7 +514,7 @@ inline ins decodeIns(unsigned int code, unsigned int pc) {
       } else if (opcode == 0b0110111) {
         res.type = LUI;
       } else {
-        std::cerr << opcode << std::endl;
+        std::cerr << code << " " << opcode << std::endl;
         assert(0);
       }
     }

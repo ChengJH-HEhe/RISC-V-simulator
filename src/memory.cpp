@@ -36,6 +36,7 @@ void MEM::loadInput(){
   }
 }
   unsigned int MEM::read(int pos, int len) {
+    if(pos < 0 || pos+len>5e6) return 0;
     unsigned int res = 0;
     for(int i = 0; i < len; ++i) {
       res |= (mem[pos++] << (i*8));
@@ -44,6 +45,7 @@ void MEM::loadInput(){
   }
   void MEM::write(int pos, int len, unsigned int dat){
     //std::cout << "store" << pos << " " << len << " " << dat << std::endl;
+    if(pos < 0 || pos + len > 5e6) return;
     for(int i = 0; i < len; ++i){
       mem[pos++] = (dat & 0xFF);
       dat >>= 8;

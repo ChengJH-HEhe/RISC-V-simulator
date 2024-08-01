@@ -119,12 +119,12 @@ inline void process() {
     updateAll();
     if (reset)
       resetAll();
-    //output();
     iq.fetch(clk, &Mem);
+    //output();
     execute();
+    issue();
     if (halt)
       break;
-    issue();
   }
   updateAll();
   std::cout << (reg.cur[10].value & 255u) << std::endl;
